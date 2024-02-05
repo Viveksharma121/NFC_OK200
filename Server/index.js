@@ -10,13 +10,15 @@ const user = require("./models/user");
 const jwt = require("jsonwebtoken");
 const path = require("path");
 const carData=require("./routes/carList");
+const setupSocketIO = require('./routes/chat');
+const socketIo = require('socket.io');
 // const taskRoute = require("./routes/Edittask");
 require("dotenv").config({ path: path.resolve(__dirname, ".env") });
 const PORT = 3001;
 const app = express();
 app.use(cors());
 app.use(express.json());
-
+const io = socketIo(server);
 mongoose.set("strictQuery", false);
 mongoose
   .connect(
@@ -143,3 +145,12 @@ app.get('/getAllDocuments', async (req, res) => {
   }
 });
 
+app.post('/chat',async(req,res)=>{
+  try{
+    setupSocketIO(io);
+  }catch (error) {
+    console.error('Error retrieving documents:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+    
